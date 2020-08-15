@@ -1,9 +1,9 @@
-Dissonance HLAPI Demo
+Dissonance LiteNetLibManager Demo
 =====================
 
-This demo demonstrates the core features of Dissonance voice comms with Unity HLAPI networking:
+This demo demonstrates the core features of Dissonance voice comms with LiteNetLibManager networking:
 
-* The Dissonance HLAPI "DissonanceSetup" prefab.
+* The Dissonance LiteNetLibManager "DissonanceSetup" prefab.
 * Global voice channel with push-to-talk.
 * Volume-triggered chat rooms, "Room A" and "Room B", with automatic voice activation.
 * Proximity chat with other nearby players.
@@ -17,12 +17,12 @@ Running the demo
 
 As this is a multiplayer voice comms demo, we will want to run multiple clients and connect them all into one session.
 
-1. Add both "HLAPI Demo" and "HLAPI Game World" scenes to your project's build settings, and drag "HLAPI Demo" to the top of the list.
-2. Open "HLAPI Demo" scene and open the `NetworkManager`. Ensure that `Offline Scene` is set up `HLAPI Demo` and `Online Scene` is set to `HLAPI Game World`
+1. Add both "LnlM Demo" and "LnlM Game World" scenes to your project's build settings, and drag "LnlM Demo" to the top of the list.
+2. Open "LnlM Demo" scene and open the `NetworkManager`. Ensure that `Offline Scene` is set up `LnlM Demo` and `Online Scene` is set to `LnlM Game World`
 3. Click File -> Build and Run.
 4. Once the client is running, run the Demo scene in the editor.
-5. In editor, click "LAN Host(H)".
-6. On the client, click "LAN Client(C)".
+5. In editor, click "Start Host".
+6. On the client, click "Start Client".
 
 The demo scene should load on both instances with both players connected.
 
@@ -45,7 +45,7 @@ These rooms each use 3D positional audio.
 Player Tracking
 ===============
 
-Each player prefab contains a "Hlapi Player" script. This script tracks the position of the player and enables positional audio playback for Dissonance voices as well as collider triggering for "Voice Broadcast Trigger" and "Voice Receipt Trigger".
+Each player prefab contains a "LnlM Player" script. This script tracks the position of the player and enables positional audio playback for Dissonance voices as well as collider triggering for "Voice Broadcast Trigger" and "Voice Receipt Trigger".
 
 Player Proximity
 ================
