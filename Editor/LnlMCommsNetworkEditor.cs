@@ -23,10 +23,6 @@ namespace Dissonance.Integrations.LiteNetLibManager.Editor
 
             using (new EditorGUI.DisabledScope(Application.isPlaying))
             {
-
-                //Set the two QoS channels
-                EditorGUILayout.HelpBox("Dissonance requires 2 HLAPI QoS channels.", MessageType.Info);
-
                 _advanced = EditorGUILayout.Foldout(_advanced, "Advanced Configuration");
                 if (_advanced)
                 {
