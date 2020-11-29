@@ -70,9 +70,9 @@ namespace Dissonance.Integrations.LiteNetLibManager
         #endregion
 
         #region Send/Receive
-        private void OnMessageReceivedHandler(LiteNetLibMessageHandler netmsg)
+        private void OnMessageReceivedHandler(MessageHandlerData netmsg)
         {
-            NetworkReceivedPacket(netmsg.connectionId, new ArraySegment<byte>(netmsg.reader.GetArray<byte>()));
+            NetworkReceivedPacket(netmsg.ConnectionId, new ArraySegment<byte>(netmsg.Reader.GetArray<byte>()));
         }
 
         protected override void ReadMessages()
