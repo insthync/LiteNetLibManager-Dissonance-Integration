@@ -49,7 +49,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void ReadMessages()
         {
-            //Messages are received in an event handler, so we don't need to do any work to read events
+            // Messages are received and read by event handlers, so it doesn't have to read messages here
         }
 
         protected override void SendReliable(ArraySegment<byte> packet)
