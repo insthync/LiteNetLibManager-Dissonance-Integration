@@ -78,7 +78,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void ReadMessages()
         {
-            // Messages are received and read by event handlers, so it doesn't have to read messages here
+            //Messages are received in an event handler, so we don't need to do any work to read events
         }
 
         protected override void SendReliable(long connectionId, ArraySegment<byte> packet)

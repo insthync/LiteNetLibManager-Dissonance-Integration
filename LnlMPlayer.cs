@@ -14,8 +14,6 @@ namespace Dissonance.Integrations.LiteNetLibManager
         private const string GUID = "";
         private static readonly Log Log = Logs.Create(LogCategory.Network, "LiteNetLibManager Player Component");
 
-        public byte serverSendDataChannel = 10;
-        public byte clientSendDataChannel = 10;
         private DissonanceComms _comms;
 
         public bool IsTracking { get; private set; }
@@ -86,7 +84,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
             Log.Debug("Tracking `OnStartOwnerClient` Name={0}", comms.LocalPlayerName);
 
             // This method is called on the client which has control authority over this object. This will be the local client of whichever player we are tracking.
-            if (!string.IsNullOrEmpty(comms.LocalPlayerName))
+            if (comms.LocalPlayerName != null)
                 SetPlayerName(comms.LocalPlayerName);
 
             //Subscribe to future name changes (this is critical because we may not have run the initial set name yet and this will trigger that initial call)
@@ -109,7 +107,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
             //Inform the server the name has changed
             if (IsOwnerClient)
-                RPC(CmdSetPlayerName, clientSendDataChannel, LiteNetLib.DeliveryMethod.ReliableUnordered, playerName);
+                CallNetFunction(CmdSetPlayerName, FunctionReceivers.Server, playerName);
         }
 
         public override void OnStartClient()
@@ -122,20 +120,20 @@ namespace Dissonance.Integrations.LiteNetLibManager
         }
 
         /// <summary>
-        /// Sending from client to server
+        /// Invoking on client will cause it to run on the server
         /// </summary>
         /// <param name="playerName"></param>
-        [ServerRpc]
+        [NetFunction]
         private void CmdSetPlayerName(string playerName)
         {
             _playerId = playerName;
 
             //Now call the RPC to inform clients they need to handle this changed value
-            RPC(RpcSetPlayerName, serverSendDataChannel, LiteNetLib.DeliveryMethod.ReliableUnordered, playerName);
+            CallNetFunction(RpcSetPlayerName, FunctionReceivers.All, playerName);
         }
 
         /// <summary>
-        /// Sending from server to client
+        /// Invoking on the server will cause it to run on all the clients
         /// </summary>
         /// <param name="playerName"></param>
         [NetFunction]
