@@ -8,6 +8,8 @@ namespace Dissonance.Integrations.LiteNetLibManager
     public class LnlMClient
         : BaseClient<LnlMServer, LnlMClient, long>
     {
+        public byte dataChannel = 10;
+
         #region Fields and properties
         private readonly LnlMCommsNetwork _network;
         #endregion
@@ -52,7 +54,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void SendReliable(ArraySegment<byte> packet)
         {
-            _network.Manager.ClientSendPacket(LiteNetLib.DeliveryMethod.ReliableOrdered, _network.TypeCode, (writer) =>
+            _network.Manager.ClientSendPacket(dataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.TypeCode, (writer) =>
             {
                 writer.PutArray(packet.Array);
             });
@@ -60,7 +62,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void SendUnreliable(ArraySegment<byte> packet)
         {
-            _network.Manager.ClientSendPacket(LiteNetLib.DeliveryMethod.Sequenced, _network.TypeCode, (writer) =>
+            _network.Manager.ClientSendPacket(dataChannel, LiteNetLib.DeliveryMethod.Sequenced, _network.TypeCode, (writer) =>
             {
                 writer.PutArray(packet.Array);
             });

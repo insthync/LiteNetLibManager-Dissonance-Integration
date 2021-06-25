@@ -10,10 +10,11 @@ namespace Dissonance.Integrations.LiteNetLibManager
     public class LnlMServer
         : BaseServer<LnlMServer, LnlMClient, long>
     {
+        public byte dataChannel = 10;
+
         #region Fields and properties
         private readonly LnlMCommsNetwork _network;
         private readonly List<long> _addedConnections = new List<long>();
-
         #endregion
 
         #region Constructors
@@ -82,7 +83,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void SendReliable(long connectionId, ArraySegment<byte> packet)
         {
-            _network.Manager.ServerSendPacket(connectionId, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.TypeCode, (writer) =>
+            _network.Manager.ServerSendPacket(connectionId, dataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.TypeCode, (writer) =>
             {
                 writer.PutArray(packet.Array);
             });
@@ -90,7 +91,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void SendUnreliable(long connectionId, ArraySegment<byte> packet)
         {
-            _network.Manager.ServerSendPacket(connectionId, LiteNetLib.DeliveryMethod.Sequenced, _network.TypeCode, (writer) =>
+            _network.Manager.ServerSendPacket(connectionId, dataChannel, LiteNetLib.DeliveryMethod.Sequenced, _network.TypeCode, (writer) =>
             {
                 writer.PutArray(packet.Array);
             });
