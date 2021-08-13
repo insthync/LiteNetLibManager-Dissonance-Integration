@@ -71,7 +71,6 @@ namespace Dissonance.Integrations.LiteNetLibManager
         public override void OnStartOwnerClient()
         {
             base.OnStartOwnerClient();
-
             var comms = FindObjectOfType<DissonanceComms>();
             if (comms == null)
             {
@@ -104,8 +103,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
                 StopTracking();
 
             // Perform the actual work
-            if (IsServer)
-                _playerId = playerName;
+            _playerId = playerName;
             StartTracking();
 
             // Inform the server the name has changed
