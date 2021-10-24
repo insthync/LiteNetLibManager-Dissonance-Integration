@@ -12,12 +12,7 @@ GameObject:
   - component: {fileID: 11485100}
   - component: {fileID: 11453452}
   - component: {fileID: 11474202}
-  - component: {fileID: 11434200}
   - component: {fileID: 143227142140302458}
-  - component: {fileID: 114325906741866098}
-  - component: {fileID: 135138069234968226}
-  - component: {fileID: 114453182314010296}
-  - component: {fileID: 114197374400351706}
   m_Layer: 0
   m_Name: LnlM Player Prefab
   m_TagString: Untagged
@@ -38,6 +33,7 @@ Transform:
   m_Children:
   - {fileID: 4909442300262100}
   - {fileID: 4204063883284958}
+  - {fileID: 229958006725020454}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -55,9 +51,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   assetId: 
   objectId: 0
-  connectionId: 0
-  manager: {fileID: 0}
-  subscriberIds: 
+  visibleRange: 0
+  alwaysVisible: 0
+  doNotDestroyWhenDisconnect: 0
+  poolingSize: 0
 --- !u!114 &11453452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,6 +68,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviourIndex: 0
+  dataChannel: 0
   sendOptions: 0
   sendInterval: 0.1
 --- !u!114 &11474202
@@ -86,36 +84,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviourIndex: 0
-  sendOptions: 1
+  dataChannel: 0
+  sendOptions: 4
   sendInterval: 0.1
   syncingTransform: {fileID: 0}
   ownerClientCanSendTransform: 1
-  ownerClientNotInterpolate: 1
   ownerClientSendInterval: 0.01
   snapThreshold: 5
-  movementTheshold: 0.075
-  rotateTheshold: 1
+  interpolateMode: 0
+  fixedInterpolateSpeed: 0
+  extrapolateMode: 0
+  fixedExtrapolateSpeed: 0
   syncPositionX: 0
   syncPositionY: 0
   syncPositionZ: 0
   syncRotationX: 1
   syncRotationY: 3
   syncRotationZ: 1
---- !u!114 &11434200
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 144342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b754c940132a264cbc7a4cd72e7e392, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  behaviourIndex: 0
-  sendOptions: 0
-  sendInterval: 0.1
 --- !u!143 &143227142140302458
 CharacterController:
   m_ObjectHideFlags: 0
@@ -134,80 +119,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &114325906741866098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 144342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a066ddbf125f9546bcadc947418566b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tokens:
-    _tokens: []
-  _channelTypeExpanded: 0
-  _metadataExpanded: 0
-  _activationModeExpanded: 0
-  _tokensExpanded: 0
-  _ampExpanded: 0
-  _activationFaderSettings:
-    _volume: 1
-    _fadeInTicks: 0
-    _fadeOutTicks: 1500000
-  _triggerFaderSettings:
-    _volume: 1
-    _fadeInTicks: 7500000
-    _fadeOutTicks: 11500000
-  _broadcastPosition: 1
-  _channelType: 2
-  _inputName: TeamChat
-  _mode: 1
-  _muted: 0
-  _playerId: 
-  _useTrigger: 1
-  _roomName: 
-  _priority: -2
---- !u!135 &135138069234968226
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 144342}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 6
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114453182314010296
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 144342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab5f404477c7a3042b9c8be8afcce9bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Color: {r: 0.10098736, g: 0.8161765, b: 0.0060013034, a: 1}
---- !u!114 &114197374400351706
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 144342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19dd0b766a7ddc940a3aed2bf0e21d8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1348336169904718
 GameObject:
   m_ObjectHideFlags: 0
@@ -399,3 +310,130 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &2505807537081271502
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 229958006725020454}
+  - component: {fileID: 2961272380392088531}
+  - component: {fileID: 6344056209731092126}
+  - component: {fileID: 6753219992383757586}
+  - component: {fileID: 2050233075620199424}
+  - component: {fileID: 4337168233227176990}
+  m_Layer: 0
+  m_Name: VoiceChat
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &229958006725020454
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2505807537081271502}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 455476}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2961272380392088531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2505807537081271502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b754c940132a264cbc7a4cd72e7e392, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  behaviourIndex: 0
+  dataChannel: 0
+  sendOptions: 0
+  sendInterval: 0.1
+  serverSendDataChannel: 10
+  clientSendDataChannel: 10
+--- !u!114 &6344056209731092126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2505807537081271502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a066ddbf125f9546bcadc947418566b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tokens:
+    _tokens: []
+  _channelTypeExpanded: 0
+  _metadataExpanded: 0
+  _activationModeExpanded: 0
+  _tokensExpanded: 0
+  _ampExpanded: 0
+  _activationFaderSettings:
+    _volume: 1
+    _fadeInTicks: 0
+    _fadeOutTicks: 1500000
+  _triggerFaderSettings:
+    _volume: 1
+    _fadeInTicks: 7500000
+    _fadeOutTicks: 11500000
+  _broadcastPosition: 1
+  _channelType: 2
+  _inputName: TeamChat
+  _mode: 1
+  _muted: 0
+  _playerId: 
+  _useTrigger: 1
+  _roomName: 
+  _priority: -2
+--- !u!114 &6753219992383757586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2505807537081271502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab5f404477c7a3042b9c8be8afcce9bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Color: {r: 0.10098736, g: 0.8161765, b: 0.0060013034, a: 1}
+--- !u!114 &2050233075620199424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2505807537081271502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19dd0b766a7ddc940a3aed2bf0e21d8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!135 &4337168233227176990
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2505807537081271502}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 6
+  m_Center: {x: 0, y: 0, z: 0}
