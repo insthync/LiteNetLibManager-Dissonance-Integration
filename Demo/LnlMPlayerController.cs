@@ -6,6 +6,7 @@ namespace Dissonance.Integrations.LiteNetLibManager.Demo
     public class LnlMPlayerController
         : LiteNetLibBehaviour
     {
+        public VoiceBroadcastTrigger voiceBroadcastTrigger;
         void Update()
         {
             if (!IsOwnerClient)
@@ -26,6 +27,15 @@ namespace Dissonance.Integrations.LiteNetLibManager.Demo
             {
                 transform.position = Vector3.zero;
                 transform.rotation = Quaternion.identity;
+            }
+
+            if (Input.GetKey(KeyCode.V))
+            {
+                voiceBroadcastTrigger.Mode = CommActivationMode.VoiceActivation;
+            }
+            else
+            {
+                voiceBroadcastTrigger.Mode = CommActivationMode.None;
             }
         }
     }
