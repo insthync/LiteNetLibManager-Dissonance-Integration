@@ -29,7 +29,7 @@ namespace Dissonance.Integrations.LiteNetLibManager.Demo
                 transform.rotation = Quaternion.identity;
             }
 
-            if (Input.GetKey(KeyCode.V))
+            if (Input.GetKey(KeyCode.T))
             {
                 voiceBroadcastTrigger.Mode = CommActivationMode.VoiceActivation;
             }
