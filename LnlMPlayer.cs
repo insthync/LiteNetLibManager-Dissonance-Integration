@@ -27,7 +27,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
         /// This is a SyncField, this means LiteNetLibManager will handle setting this value.
         /// This is important for Join-In-Progress because new clients will join and instantly have the player name correctly set without any effort on our part.
         /// </remarks>
-        [SyncField]
+        [SyncField(onChangeMethodName = nameof(OnPlayerIdChanged))]
         private string _playerId;
         public string PlayerId { get { return _playerId; } }
 
@@ -128,21 +128,6 @@ namespace Dissonance.Integrations.LiteNetLibManager
         private void CmdSetPlayerName(string playerName)
         {
             _playerId = playerName;
-
-            // Now call the RPC to inform clients they need to handle this changed value
-            RPC(RpcSetPlayerName, serverSendDataChannel, LiteNetLib.DeliveryMethod.ReliableUnordered, playerName);
-        }
-
-        /// <summary>
-        /// Sending from server to client
-        /// </summary>
-        /// <param name="playerName"></param>
-        [AllRpc]
-        private void RpcSetPlayerName(string playerName)
-        {
-            // Received a message from server (on all clients). If this is not the local player then apply the change
-            if (!IsOwnerClient)
-                SetPlayerName(playerName);
         }
 
         private void StartTracking()
@@ -167,6 +152,13 @@ namespace Dissonance.Integrations.LiteNetLibManager
                 _comms.StopTracking(this);
                 IsTracking = false;
             }
+        }
+
+        private void OnPlayerIdChanged(string playerId)
+        {
+            // Received a changes from server (on all clients). If this is not the local player then apply the change
+            if (!IsOwnerClient && !string.IsNullOrEmpty(playerId))
+                SetPlayerName(playerId);
         }
     }
 }
