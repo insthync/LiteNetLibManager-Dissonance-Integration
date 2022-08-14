@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dissonance.Integrations.LiteNetLibManager
@@ -51,19 +49,25 @@ namespace Dissonance.Integrations.LiteNetLibManager
             SetPlayerId(playerId);
         }
 
-        public void OnDestroy()
+        public void OnEnable()
+        {
+            if (!IsTracking && !string.IsNullOrWhiteSpace(PlayerId))
+                StartTracking();
+        }
+
+        public void OnDisable()
         {
             if (IsTracking)
                 StopTracking();
+        }
+
+        public void OnDestroy()
+        {
             CommsNetwork.UnregisterPlayer(ConnectionId);
         }
 
         private void SetPlayerId(string playerId)
         {
-            // We need the player name to be set on all the clients and then tracking to be started (on each client).
-            // To do this we send a command from this client, informing the server of our name. The server will pass this on to all the clients (with an `SyncField`)
-            // Client -> Server -> Other Clients
-
             // We need to stop and restart tracking to handle the name change
             if (IsTracking)
                 StopTracking();

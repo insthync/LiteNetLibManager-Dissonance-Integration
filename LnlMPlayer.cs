@@ -22,6 +22,18 @@ namespace Dissonance.Integrations.LiteNetLibManager
             player = new LnlMPlayerFunc(FindObjectOfType<DissonanceComms>(), FindObjectOfType<LnlMCommsNetwork>(), transform, ConnectionId);
         }
 
+        private void OnEnable()
+        {
+            if (player != null)
+                player.OnEnable();
+        }
+
+        private void OnDisable()
+        {
+            if (player != null)
+                player.OnDisable();
+        }
+
         private void OnDestroy()
         {
             if (player != null)

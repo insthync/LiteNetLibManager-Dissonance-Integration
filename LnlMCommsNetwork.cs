@@ -72,17 +72,6 @@ namespace Dissonance.Integrations.LiteNetLibManager
             SendPlayerRequest(player.ConnectionId);
         }
 
-        public void SendPlayerRequest(long connectionId)
-        {
-            if (manager.IsClientConnected)
-            {
-                manager.ClientSendPacket(clientDataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, reqIdOpCode, (writer) =>
-                {
-                    writer.Put(connectionId);
-                });
-            }
-        }
-
         public void UnregisterPlayer(long connectionId)
         {
             registeredPlayers.Remove(connectionId);
@@ -93,6 +82,24 @@ namespace Dissonance.Integrations.LiteNetLibManager
             if (!registeredPlayers.ContainsKey(connectionId))
                 return;
             registeredPlayers[connectionId].Setup(isOwnerClient, playerId);
+        }
+
+        public void SendPlayerRequest(long connectionId)
+        {
+            manager.ClientSendPacket(clientDataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, reqIdOpCode, (writer) =>
+            {
+                writer.Put(connectionId);
+            });
+        }
+
+        public void SendPlayerResponse(long sendToConnectionId, long connectionId, string id)
+        {
+            manager.ServerSendPacket(sendToConnectionId, serverDataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, resIdOpCode, (writer) =>
+            {
+                writer.Put(connectionId);
+                writer.Put(connectionId == sendToConnectionId);
+                writer.Put(id);
+            });
         }
     }
 }

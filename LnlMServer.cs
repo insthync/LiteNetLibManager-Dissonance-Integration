@@ -12,6 +12,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
         #region Fields and properties
         private readonly LnlMCommsNetwork _network;
         private readonly Dictionary<long, ClientInfo<long>> _addedClients = new Dictionary<long, ClientInfo<long>>();
+        private readonly Dictionary<long, HashSet<long>> _pendingIdRequests = new Dictionary<long, HashSet<long>>();
         #endregion
 
         #region Constructors
@@ -37,9 +38,9 @@ namespace Dissonance.Integrations.LiteNetLibManager
                 {
                     ClientDisconnected(connectionId);
                     _addedClients.Remove(connectionId);
+                    _pendingIdRequests.Remove(connectionId);
                 }
             }
-
             return base.Update();
         }
         #endregion
@@ -48,6 +49,14 @@ namespace Dissonance.Integrations.LiteNetLibManager
         {
             base.AddClient(client);
             _addedClients[client.Connection] = client;
+            if (_pendingIdRequests.ContainsKey(client.Connection))
+            {
+                foreach (long requesterConnectionId in _pendingIdRequests[client.Connection])
+                {
+                    _network.SendPlayerResponse(requesterConnectionId, client.Connection, client.PlayerName);
+                }
+                _pendingIdRequests.Remove(client.Connection);
+            }
         }
 
         #region Connect/Disconnect
@@ -77,13 +86,16 @@ namespace Dissonance.Integrations.LiteNetLibManager
             long connectionId = netMsg.Reader.GetLong();
             if (_addedClients.ContainsKey(connectionId))
             {
-                ClientInfo<long> clientInfo = _addedClients[connectionId];
-                _network.manager.ServerSendPacket(netMsg.ConnectionId, _network.serverDataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.resIdOpCode, (writer) =>
-                {
-                    writer.Put(connectionId);
-                    writer.Put(connectionId == netMsg.ConnectionId);
-                    writer.Put(clientInfo.PlayerName);
-                });
+                // Send player info back to the client
+                ClientInfo<long> client = _addedClients[connectionId];
+                _network.SendPlayerResponse(netMsg.ConnectionId, connectionId, client.PlayerName);
+            }
+            else
+            {
+                // No added client yet, add the requester's connection Id to pending collection, then it will send data back to requesters later
+                if (!_pendingIdRequests.ContainsKey(connectionId))
+                    _pendingIdRequests[connectionId] = new HashSet<long>();
+                _pendingIdRequests[connectionId].Add(netMsg.ConnectionId);
             }
         }
 
