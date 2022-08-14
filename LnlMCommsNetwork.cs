@@ -43,7 +43,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
             {
                 // Switch to the appropriate mode if we have not already
                 bool isServer = manager.IsServer;
-                bool isClient = manager.IsClient;
+                bool isClient = manager.IsClientConnected;
 
                 if (Mode.IsServerEnabled() != isServer || Mode.IsClientEnabled() != isClient)
                 {
@@ -69,6 +69,18 @@ namespace Dissonance.Integrations.LiteNetLibManager
             if (registeredPlayers.ContainsKey(player.ConnectionId))
                 return;
             registeredPlayers[player.ConnectionId] = player;
+            SendPlayerRequest(player.ConnectionId);
+        }
+
+        public void SendPlayerRequest(long connectionId)
+        {
+            if (manager.IsClientConnected)
+            {
+                manager.ClientSendPacket(clientDataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, reqIdOpCode, (writer) =>
+                {
+                    writer.Put(connectionId);
+                });
+            }
         }
 
         public void UnregisterPlayer(long connectionId)

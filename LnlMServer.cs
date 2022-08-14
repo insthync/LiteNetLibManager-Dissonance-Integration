@@ -47,10 +47,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
         protected override void AddClient(ClientInfo<long> client)
         {
             base.AddClient(client);
-
-            // Add this player to the list of known connections (do not add the local player)
-            if (client.PlayerName != _network.PlayerName)
-                _addedClients[client.Connection] = client;
+            _addedClients[client.Connection] = client;
         }
 
         #region Connect/Disconnect
@@ -81,7 +78,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
             if (_addedClients.ContainsKey(connectionId))
             {
                 ClientInfo<long> clientInfo = _addedClients[connectionId];
-                _network.manager.ServerSendPacket(connectionId, _network.serverDataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.resIdOpCode, (writer) =>
+                _network.manager.ServerSendPacket(netMsg.ConnectionId, _network.serverDataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.resIdOpCode, (writer) =>
                 {
                     writer.Put(connectionId);
                     writer.Put(connectionId == netMsg.ConnectionId);

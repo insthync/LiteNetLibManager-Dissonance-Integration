@@ -26,7 +26,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
         public override void Connect()
         {
             _network.manager.RegisterClientMessage(_network.voiceOpCode, OnVoiceReceivedHandler);
-            _network.manager.RegisterServerMessage(_network.resIdOpCode, OnResIdReceivedHandler);
+            _network.manager.RegisterClientMessage(_network.resIdOpCode, OnResIdReceivedHandler);
             Connected();
         }
 
@@ -34,7 +34,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
         {
             base.Disconnect();
             _network.manager.UnregisterClientMessage(_network.voiceOpCode);
-            _network.manager.UnregisterServerMessage(_network.resIdOpCode);
+            _network.manager.UnregisterClientMessage(_network.resIdOpCode);
         }
         #endregion
 
