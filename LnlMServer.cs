@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Dissonance.Networking;
 using Dissonance.Networking.Server;
-using LiteNetLib.Utils;
 using LiteNetLibManager;
 
 namespace Dissonance.Integrations.LiteNetLibManager
@@ -10,8 +9,6 @@ namespace Dissonance.Integrations.LiteNetLibManager
     public class LnlMServer
         : BaseServer<LnlMServer, LnlMClient, long>
     {
-        public byte dataChannel = 10;
-
         #region Fields and properties
         private readonly LnlMCommsNetwork _network;
         private readonly List<long> _addedConnections = new List<long>();
@@ -35,7 +32,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
             for (var i = _addedConnections.Count - 1; i >= 0; i--)
             {
                 var conn = _addedConnections[i];
-                if (!_network.Manager.ContainsPlayer(conn))
+                if (!_network.Manager.ContainsConnectionId(conn))
                 {
                     ClientDisconnected(_addedConnections[i]);
                     _addedConnections.RemoveAt(i);
@@ -58,22 +55,21 @@ namespace Dissonance.Integrations.LiteNetLibManager
         #region Connect/Disconnect
         public override void Connect()
         {
-            _network.Manager.RegisterServerMessage(_network.TypeCode, OnMessageReceivedHandler);
-
+            _network.Manager.RegisterServerMessage(_network.typeCode, OnMessageReceivedHandler);
             base.Connect();
         }
 
         public override void Disconnect()
         {
             base.Disconnect();
-            _network.Manager.UnregisterServerMessage(_network.TypeCode);
+            _network.Manager.UnregisterServerMessage(_network.typeCode);
         }
         #endregion
 
         #region Send/Receive
         private void OnMessageReceivedHandler(MessageHandlerData netmsg)
         {
-            NetworkReceivedPacket(netmsg.ConnectionId, new ArraySegment<byte>(netmsg.Reader.GetArray<byte>()));
+            NetworkReceivedPacket(netmsg.ConnectionId, new ArraySegment<byte>(netmsg.Reader.GetBytesWithLength()));
         }
 
         protected override void ReadMessages()
@@ -83,17 +79,17 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void SendReliable(long connectionId, ArraySegment<byte> packet)
         {
-            _network.Manager.ServerSendPacket(connectionId, dataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.TypeCode, (writer) =>
+            _network.Manager.ServerSendPacket(connectionId, _network.serverChannelId, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.typeCode, (writer) =>
             {
-                writer.PutArray(packet.Array);
+                writer.PutBytesWithLength(packet.Array);
             });
         }
 
         protected override void SendUnreliable(long connectionId, ArraySegment<byte> packet)
         {
-            _network.Manager.ServerSendPacket(connectionId, dataChannel, LiteNetLib.DeliveryMethod.Sequenced, _network.TypeCode, (writer) =>
+            _network.Manager.ServerSendPacket(connectionId, _network.serverChannelId, LiteNetLib.DeliveryMethod.Sequenced, _network.typeCode, (writer) =>
             {
-                writer.PutArray(packet.Array);
+                writer.PutBytesWithLength(packet.Array);
             });
         }
         #endregion

@@ -1,6 +1,5 @@
 ﻿using System;
 using Dissonance.Networking;
-using LiteNetLib.Utils;
 using LiteNetLibManager;
 
 namespace Dissonance.Integrations.LiteNetLibManager
@@ -8,8 +7,6 @@ namespace Dissonance.Integrations.LiteNetLibManager
     public class LnlMClient
         : BaseClient<LnlMServer, LnlMClient, long>
     {
-        public byte dataChannel = 10;
-
         #region Fields and properties
         private readonly LnlMCommsNetwork _network;
         #endregion
@@ -29,22 +26,21 @@ namespace Dissonance.Integrations.LiteNetLibManager
         #region Connect/Disconnect
         public override void Connect()
         {
-            _network.Manager.RegisterClientMessage(_network.TypeCode, OnMessageReceivedHandler);
-
+            _network.Manager.RegisterClientMessage(_network.typeCode, OnMessageReceivedHandler);
             Connected();
         }
 
         public override void Disconnect()
         {
             base.Disconnect();
-            _network.Manager.UnregisterClientMessage(_network.TypeCode);
+            _network.Manager.UnregisterClientMessage(_network.typeCode);
         }
         #endregion
 
         #region Send/Receive
         private void OnMessageReceivedHandler(MessageHandlerData netmsg)
         {
-            NetworkReceivedPacket(new ArraySegment<byte>(netmsg.Reader.GetArray<byte>()));
+            NetworkReceivedPacket(new ArraySegment<byte>(netmsg.Reader.GetBytesWithLength()));
         }
 
         protected override void ReadMessages()
@@ -54,17 +50,17 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void SendReliable(ArraySegment<byte> packet)
         {
-            _network.Manager.ClientSendPacket(dataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.TypeCode, (writer) =>
+            _network.Manager.ClientSendPacket(_network.clientChannelId, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.typeCode, (writer) =>
             {
-                writer.PutArray(packet.Array);
+                writer.PutBytesWithLength(packet.Array);
             });
         }
 
         protected override void SendUnreliable(ArraySegment<byte> packet)
         {
-            _network.Manager.ClientSendPacket(dataChannel, LiteNetLib.DeliveryMethod.Sequenced, _network.TypeCode, (writer) =>
+            _network.Manager.ClientSendPacket(_network.clientChannelId, LiteNetLib.DeliveryMethod.Sequenced, _network.typeCode, (writer) =>
             {
-                writer.PutArray(packet.Array);
+                writer.PutBytesWithLength(packet.Array);
             });
         }
         #endregion

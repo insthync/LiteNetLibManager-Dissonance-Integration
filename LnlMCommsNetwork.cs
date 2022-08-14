@@ -1,7 +1,7 @@
 ﻿using System;
 using Dissonance.Networking;
 using UnityEngine;
-using LiteNetLibManager;
+using LnlM = LiteNetLibManager.LiteNetLibManager;
 
 namespace Dissonance.Integrations.LiteNetLibManager
 {
@@ -9,9 +9,14 @@ namespace Dissonance.Integrations.LiteNetLibManager
     public class LnlMCommsNetwork
         : BaseCommsNetwork<LnlMServer, LnlMClient, long, Unit, Unit>
     {
-        public ushort TypeCode = 18385;
-
-        public LiteNetLibGameManager Manager { get; private set; }
+        public ushort typeCode = 18385;
+        public byte clientChannelId = 3;
+        public byte serverChannelId = 3;
+        public LnlM manager;
+        public LnlM Manager
+        {
+            get { return manager; }
+        }
 
         protected override LnlMServer CreateServer(Unit details)
         {
@@ -23,9 +28,10 @@ namespace Dissonance.Integrations.LiteNetLibManager
             return new LnlMClient(this);
         }
 
-        private void Awake()
+        private void Start()
         {
-            Manager = FindObjectOfType<LiteNetLibGameManager>();
+            if (manager == null)
+                manager = FindObjectOfType<LnlM>();
         }
 
         protected override void Update()
@@ -34,7 +40,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
             {
                 if (Manager.IsNetworkActive)
                 {
-                    // switch to the appropriate mode if we have not already
+                    // Switch to the appropriate mode if we have not already
                     var server = Manager.IsServer;
                     var client = Manager.IsClient;
 
@@ -50,7 +56,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
                 }
                 else if (Mode != NetworkMode.None)
                 {
-                    // stop the network if networking system has shut down
+                    // Stop the network if networking system has shut down
                     Stop();
                 }
             }
