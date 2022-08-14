@@ -1,5 +1,5 @@
-﻿using System;
-using Dissonance.Networking;
+﻿using Dissonance.Networking;
+using System.Collections.Generic;
 using UnityEngine;
 using LnlM = LiteNetLibManager.LiteNetLibManager;
 
@@ -9,14 +9,14 @@ namespace Dissonance.Integrations.LiteNetLibManager
     public class LnlMCommsNetwork
         : BaseCommsNetwork<LnlMServer, LnlMClient, long, Unit, Unit>
     {
-        public ushort typeCode = 18385;
-        public byte clientChannelId = 3;
-        public byte serverChannelId = 3;
+        public ushort voiceOpCode = 18385;
+        public ushort reqIdOpCode = 18386;
+        public ushort resIdOpCode = 18387;
+        public byte clientDataChannel = 3;
+        public byte serverDataChannel = 3;
         public LnlM manager;
-        public LnlM Manager
-        {
-            get { return manager; }
-        }
+
+        private Dictionary<long, LnlMPlayerFunc> registeredPlayers = new Dictionary<long, LnlMPlayerFunc>();
 
         protected override LnlMServer CreateServer(Unit details)
         {
@@ -36,32 +36,51 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void Update()
         {
-            if (IsInitialized)
-            {
-                if (Manager.IsNetworkActive)
-                {
-                    // Switch to the appropriate mode if we have not already
-                    var server = Manager.IsServer;
-                    var client = Manager.IsClient;
+            if (!IsInitialized)
+                return;
 
-                    if (Mode.IsServerEnabled() != server || Mode.IsClientEnabled() != client)
-                    {
-                        if (server && client)
-                            RunAsHost(Unit.None, Unit.None);
-                        else if (server)
-                            RunAsDedicatedServer(Unit.None);
-                        else if (client)
-                            RunAsClient(Unit.None);
-                    }
-                }
-                else if (Mode != NetworkMode.None)
+            if (manager.IsNetworkActive)
+            {
+                // Switch to the appropriate mode if we have not already
+                bool isServer = manager.IsServer;
+                bool isClient = manager.IsClient;
+
+                if (Mode.IsServerEnabled() != isServer || Mode.IsClientEnabled() != isClient)
                 {
-                    // Stop the network if networking system has shut down
-                    Stop();
+                    if (isServer && isClient)
+                        RunAsHost(Unit.None, Unit.None);
+                    else if (isServer)
+                        RunAsDedicatedServer(Unit.None);
+                    else if (isClient)
+                        RunAsClient(Unit.None);
                 }
+            }
+            else if (Mode != NetworkMode.None)
+            {
+                // Stop the network if networking system has shut down
+                Stop();
             }
 
             base.Update();
+        }
+
+        public void RegisterPlayer(LnlMPlayerFunc player)
+        {
+            if (registeredPlayers.ContainsKey(player.ConnectionId))
+                return;
+            registeredPlayers[player.ConnectionId] = player;
+        }
+
+        public void UnregisterPlayer(long connectionId)
+        {
+            registeredPlayers.Remove(connectionId);
+        }
+
+        public void SetupPlayer(long connectionId, bool isOwnerClient, string playerId)
+        {
+            if (!registeredPlayers.ContainsKey(connectionId))
+                return;
+            registeredPlayers[connectionId].Setup(isOwnerClient, playerId);
         }
     }
 }

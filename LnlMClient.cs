@@ -17,7 +17,6 @@ namespace Dissonance.Integrations.LiteNetLibManager
         {
             if (network == null)
                 throw new ArgumentNullException("network");
-
             _network = network;
 
         }
@@ -26,21 +25,31 @@ namespace Dissonance.Integrations.LiteNetLibManager
         #region Connect/Disconnect
         public override void Connect()
         {
-            _network.Manager.RegisterClientMessage(_network.typeCode, OnMessageReceivedHandler);
+            _network.manager.RegisterClientMessage(_network.voiceOpCode, OnVoiceReceivedHandler);
+            _network.manager.RegisterServerMessage(_network.resIdOpCode, OnResIdReceivedHandler);
             Connected();
         }
 
         public override void Disconnect()
         {
             base.Disconnect();
-            _network.Manager.UnregisterClientMessage(_network.typeCode);
+            _network.manager.UnregisterClientMessage(_network.voiceOpCode);
+            _network.manager.UnregisterServerMessage(_network.resIdOpCode);
         }
         #endregion
 
         #region Send/Receive
-        private void OnMessageReceivedHandler(MessageHandlerData netmsg)
+        private void OnVoiceReceivedHandler(MessageHandlerData netMsg)
         {
-            NetworkReceivedPacket(new ArraySegment<byte>(netmsg.Reader.GetBytesWithLength()));
+            NetworkReceivedPacket(new ArraySegment<byte>(netMsg.Reader.GetBytesWithLength()));
+        }
+
+        private void OnResIdReceivedHandler(MessageHandlerData netMsg)
+        {
+            long connectionId = netMsg.Reader.GetLong();
+            bool isOwnerClient = netMsg.Reader.GetBool();
+            string id = netMsg.Reader.GetString();
+            _network.SetupPlayer(connectionId, isOwnerClient, id);
         }
 
         protected override void ReadMessages()
@@ -50,7 +59,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void SendReliable(ArraySegment<byte> packet)
         {
-            _network.Manager.ClientSendPacket(_network.clientChannelId, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.typeCode, (writer) =>
+            _network.manager.ClientSendPacket(_network.clientDataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.voiceOpCode, (writer) =>
             {
                 writer.PutBytesWithLength(packet.Array);
             });
@@ -58,7 +67,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void SendUnreliable(ArraySegment<byte> packet)
         {
-            _network.Manager.ClientSendPacket(_network.clientChannelId, LiteNetLib.DeliveryMethod.Sequenced, _network.typeCode, (writer) =>
+            _network.manager.ClientSendPacket(_network.clientDataChannel, LiteNetLib.DeliveryMethod.Sequenced, _network.voiceOpCode, (writer) =>
             {
                 writer.PutBytesWithLength(packet.Array);
             });

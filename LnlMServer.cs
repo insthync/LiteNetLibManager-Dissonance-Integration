@@ -11,14 +11,14 @@ namespace Dissonance.Integrations.LiteNetLibManager
     {
         #region Fields and properties
         private readonly LnlMCommsNetwork _network;
-        private readonly List<long> _addedConnections = new List<long>();
+        private readonly Dictionary<long, ClientInfo<long>> _addedClients = new Dictionary<long, ClientInfo<long>>();
         #endregion
 
         #region Constructors
         public LnlMServer(LnlMCommsNetwork network)
         {
-            if (network == null) throw new ArgumentNullException("network");
-
+            if (network == null)
+                throw new ArgumentNullException("network");
             _network = network;
         }
         #endregion
@@ -29,13 +29,14 @@ namespace Dissonance.Integrations.LiteNetLibManager
             // The only way to get an event regarding disconnections from HLAPI is to be a NetworkManager. We aren't a
             // NetworkManager and don't want to be because it would make setting up the HLAPI integration significantly
             // more complex. Instead we'll have to poll for disconnections.
-            for (var i = _addedConnections.Count - 1; i >= 0; i--)
+            List<long> keys = new List<long>(_addedClients.Keys);
+            for (var i = keys.Count - 1; i >= 0; --i)
             {
-                var conn = _addedConnections[i];
-                if (!_network.Manager.ContainsConnectionId(conn))
+                var connectionId = keys[i];
+                if (!_network.manager.ContainsConnectionId(connectionId))
                 {
-                    ClientDisconnected(_addedConnections[i]);
-                    _addedConnections.RemoveAt(i);
+                    ClientDisconnected(connectionId);
+                    _addedClients.Remove(connectionId);
                 }
             }
 
@@ -47,29 +48,46 @@ namespace Dissonance.Integrations.LiteNetLibManager
         {
             base.AddClient(client);
 
-            //Add this player to the list of known connections (do not add the local player)
+            // Add this player to the list of known connections (do not add the local player)
             if (client.PlayerName != _network.PlayerName)
-                _addedConnections.Add(client.Connection);
+                _addedClients[client.Connection] = client;
         }
 
         #region Connect/Disconnect
         public override void Connect()
         {
-            _network.Manager.RegisterServerMessage(_network.typeCode, OnMessageReceivedHandler);
+            _network.manager.RegisterServerMessage(_network.voiceOpCode, OnVoiceReceivedHandler);
+            _network.manager.RegisterServerMessage(_network.reqIdOpCode, OnReqIdReceivedHandler);
             base.Connect();
         }
 
         public override void Disconnect()
         {
             base.Disconnect();
-            _network.Manager.UnregisterServerMessage(_network.typeCode);
+            _network.manager.UnregisterServerMessage(_network.voiceOpCode);
+            _network.manager.UnregisterServerMessage(_network.reqIdOpCode);
         }
         #endregion
 
         #region Send/Receive
-        private void OnMessageReceivedHandler(MessageHandlerData netmsg)
+        private void OnVoiceReceivedHandler(MessageHandlerData netMsg)
         {
-            NetworkReceivedPacket(netmsg.ConnectionId, new ArraySegment<byte>(netmsg.Reader.GetBytesWithLength()));
+            NetworkReceivedPacket(netMsg.ConnectionId, new ArraySegment<byte>(netMsg.Reader.GetBytesWithLength()));
+        }
+
+        private void OnReqIdReceivedHandler(MessageHandlerData netMsg)
+        {
+            long connectionId = netMsg.Reader.GetLong();
+            if (_addedClients.ContainsKey(connectionId))
+            {
+                ClientInfo<long> clientInfo = _addedClients[connectionId];
+                _network.manager.ServerSendPacket(connectionId, _network.serverDataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.resIdOpCode, (writer) =>
+                {
+                    writer.Put(connectionId);
+                    writer.Put(connectionId == netMsg.ConnectionId);
+                    writer.Put(clientInfo.PlayerName);
+                });
+            }
         }
 
         protected override void ReadMessages()
@@ -79,7 +97,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void SendReliable(long connectionId, ArraySegment<byte> packet)
         {
-            _network.Manager.ServerSendPacket(connectionId, _network.serverChannelId, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.typeCode, (writer) =>
+            _network.manager.ServerSendPacket(connectionId, _network.serverDataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.voiceOpCode, (writer) =>
             {
                 writer.PutBytesWithLength(packet.Array);
             });
@@ -87,7 +105,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         protected override void SendUnreliable(long connectionId, ArraySegment<byte> packet)
         {
-            _network.Manager.ServerSendPacket(connectionId, _network.serverChannelId, LiteNetLib.DeliveryMethod.Sequenced, _network.typeCode, (writer) =>
+            _network.manager.ServerSendPacket(connectionId, _network.serverDataChannel, LiteNetLib.DeliveryMethod.Sequenced, _network.voiceOpCode, (writer) =>
             {
                 writer.PutBytesWithLength(packet.Array);
             });
