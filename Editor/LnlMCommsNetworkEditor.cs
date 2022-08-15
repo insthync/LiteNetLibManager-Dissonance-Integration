@@ -10,11 +10,19 @@ namespace Dissonance.Integrations.LiteNetLibManager.Editor
     {
         private bool _advanced;
 
-        private SerializedProperty _typeCodeProperty;
+        private SerializedProperty _voiceOpCodeProperty;
+        private SerializedProperty _reqIdOpCodeProperty;
+        private SerializedProperty _resIdOpCodeProperty;
+        private SerializedProperty _clientDataChannelProperty;
+        private SerializedProperty _serverDataChannelProperty;
 
         protected void OnEnable()
         {
-            _typeCodeProperty = serializedObject.FindProperty("TypeCode");
+            _voiceOpCodeProperty = serializedObject.FindProperty("voiceOpCode");
+            _reqIdOpCodeProperty = serializedObject.FindProperty("reqIdOpCode");
+            _resIdOpCodeProperty = serializedObject.FindProperty("resIdOpCode");
+            _clientDataChannelProperty = serializedObject.FindProperty("clientDataChannel");
+            _serverDataChannelProperty = serializedObject.FindProperty("serverDataChannel");
         }
 
         public override void OnInspectorGUI()
@@ -26,14 +34,11 @@ namespace Dissonance.Integrations.LiteNetLibManager.Editor
                 _advanced = EditorGUILayout.Foldout(_advanced, "Advanced Configuration");
                 if (_advanced)
                 {
-                    //Set type code
-                    EditorGUILayout.HelpBox("Dissonance requires a type code. If you are not sending raw network packets you should use the default value.", MessageType.Info);
-                    EditorGUILayout.PropertyField(_typeCodeProperty);
-
-                    var tc = _typeCodeProperty.intValue;
-
-                    if (tc >= ushort.MaxValue || tc < 1000)
-                        EditorGUILayout.HelpBox("Event code must be between 1000 and 65535", MessageType.Error);
+                    EditorGUILayout.PropertyField(_voiceOpCodeProperty);
+                    EditorGUILayout.PropertyField(_reqIdOpCodeProperty);
+                    EditorGUILayout.PropertyField(_resIdOpCodeProperty);
+                    EditorGUILayout.PropertyField(_clientDataChannelProperty);
+                    EditorGUILayout.PropertyField(_serverDataChannelProperty);
                 }
             }
 
