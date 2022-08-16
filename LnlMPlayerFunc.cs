@@ -13,6 +13,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
         public bool IsOwnerClient { get; private set; }
         public string PlayerId { get; private set; }
         public bool IsTracking { get; private set; }
+        public System.Action<string> onSetPlayerId;
 
         public Vector3 Position
         {
@@ -75,6 +76,9 @@ namespace Dissonance.Integrations.LiteNetLibManager
             // Perform the actual work
             PlayerId = playerId;
             StartTracking();
+
+            if (onSetPlayerId != null)
+                onSetPlayerId.Invoke(PlayerId);
         }
 
         private void StartTracking()
