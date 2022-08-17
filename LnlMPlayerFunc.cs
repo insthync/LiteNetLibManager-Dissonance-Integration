@@ -8,21 +8,24 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         public DissonanceComms Comms { get; private set; }
         public LnlMCommsNetwork CommsNetwork { get; private set; }
-        public Transform Transform { get; private set; }
-        public long ConnectionId { get; private set; }
+        public ILnlMPlayer Player { get; private set; }
         public bool IsOwnerClient { get; private set; }
         public string PlayerId { get; private set; }
         public bool IsTracking { get; private set; }
-        public System.Action<string> onSetPlayerId;
+
+        public long ConnectionId
+        {
+            get { return Player.ConnectionId; }
+        }
 
         public Vector3 Position
         {
-            get { return Transform.position; }
+            get { return Player.Position; }
         }
 
         public Quaternion Rotation
         {
-            get { return Transform.rotation; }
+            get { return Player.Rotation; }
         }
 
         public NetworkPlayerType Type
@@ -35,12 +38,13 @@ namespace Dissonance.Integrations.LiteNetLibManager
             }
         }
 
-        public LnlMPlayerFunc(DissonanceComms comms, LnlMCommsNetwork commsNetwork, Transform transform, long connectionId)
+        public System.Action<string> onSetPlayerId;
+
+        public LnlMPlayerFunc(DissonanceComms comms, LnlMCommsNetwork commsNetwork, ILnlMPlayer player)
         {
             Comms = comms;
             CommsNetwork = commsNetwork;
-            Transform = transform;
-            ConnectionId = connectionId;
+            Player = player;
             CommsNetwork.RegisterPlayer(this);
         }
 

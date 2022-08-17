@@ -3,41 +3,71 @@ using LiteNetLibManager;
 
 namespace Dissonance.Integrations.LiteNetLibManager
 {
-    public class LnlMPlayer : LiteNetLibBehaviour, IDissonancePlayer
+    public class LnlMPlayer : LiteNetLibBehaviour, IDissonancePlayer, ILnlMPlayer
     {
-        private LnlMPlayerFunc player;
+        private LnlMPlayerFunc playerFunc;
 
-        public string PlayerId => player.PlayerId;
+        public string PlayerId
+        {
+            get
+            {
+                if (playerFunc == null)
+                    return string.Empty;
+                return playerFunc.PlayerId;
+            }
+        }
 
-        public Vector3 Position => player.Position;
+        public Vector3 Position
+        {
+            get { return transform.position; }
+        }
 
-        public Quaternion Rotation => player.Rotation;
+        public Quaternion Rotation
+        {
+            get { return transform.rotation; }
+        }
 
-        public NetworkPlayerType Type => player.Type;
+        public NetworkPlayerType Type
+        {
+            get
+            {
+                if (playerFunc == null)
+                    return NetworkPlayerType.Unknown;
+                return playerFunc.Type;
+            }
+        }
 
-        public bool IsTracking => player.IsTracking;
+        public bool IsTracking
+        {
+            get
+            {
+                if (playerFunc == null)
+                    return false;
+                return playerFunc.IsTracking;
+            }
+        }
 
         public override void OnStartClient()
         {
-            player = new LnlMPlayerFunc(FindObjectOfType<DissonanceComms>(), FindObjectOfType<LnlMCommsNetwork>(), transform, ConnectionId);
+            playerFunc = new LnlMPlayerFunc(FindObjectOfType<DissonanceComms>(), FindObjectOfType<LnlMCommsNetwork>(), this);
         }
 
         private void OnEnable()
         {
-            if (player != null)
-                player.OnEnable();
+            if (playerFunc != null)
+                playerFunc.OnEnable();
         }
 
         private void OnDisable()
         {
-            if (player != null)
-                player.OnDisable();
+            if (playerFunc != null)
+                playerFunc.OnDisable();
         }
 
         private void OnDestroy()
         {
-            if (player != null)
-                player.OnDestroy();
+            if (playerFunc != null)
+                playerFunc.OnDestroy();
         }
     }
 }
