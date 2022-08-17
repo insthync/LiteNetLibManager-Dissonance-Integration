@@ -68,6 +68,8 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         public void OnDestroy()
         {
+            if (IsTracking)
+                StopTracking();
             CommsNetwork.UnregisterPlayer(ConnectionId);
         }
 
