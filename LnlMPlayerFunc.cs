@@ -38,7 +38,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
             }
         }
 
-        public System.Action<string> onSetPlayerId;
+        public System.Action<bool, string> onSetPlayerId;
 
         public LnlMPlayerFunc(DissonanceComms comms, LnlMCommsNetwork commsNetwork, ILnlMPlayer player)
         {
@@ -84,7 +84,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
             StartTracking();
 
             if (onSetPlayerId != null)
-                onSetPlayerId.Invoke(PlayerId);
+                onSetPlayerId.Invoke(IsOwnerClient, PlayerId);
         }
 
         private void StartTracking()
