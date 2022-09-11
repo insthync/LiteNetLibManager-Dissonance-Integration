@@ -15,6 +15,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
         public byte clientDataChannel = 3;
         public byte serverDataChannel = 3;
         public LnlM manager;
+        public string defaultManagerClassName;
 
         private Dictionary<long, LnlMPlayerFunc> registeredPlayers = new Dictionary<long, LnlMPlayerFunc>();
 
@@ -30,6 +31,21 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         private void Start()
         {
+            if (manager == null)
+            {
+                System.Reflection.Assembly[] assemblies = System.AppDomain.CurrentDomain.GetAssemblies();
+                foreach (var assembly in assemblies)
+                {
+                    var type = assembly.GetType(defaultManagerClassName);
+                    if (type == null) continue;
+                    var managerObjects = FindObjectsOfType(type);
+                    if (managerObjects != null && managerObjects.Length > 0)
+                    {
+                        manager = managerObjects[0] as LnlM;
+                        break;
+                    }
+                }
+            }
             if (manager == null)
                 manager = FindObjectOfType<LnlM>();
         }

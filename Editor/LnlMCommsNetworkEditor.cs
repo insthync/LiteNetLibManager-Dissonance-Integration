@@ -16,6 +16,7 @@ namespace Dissonance.Integrations.LiteNetLibManager.Editor
         private SerializedProperty _clientDataChannelProperty;
         private SerializedProperty _serverDataChannelProperty;
         private SerializedProperty _managerProperty;
+        private SerializedProperty _defaultManagerClassNameProperty;
 
         protected void OnEnable()
         {
@@ -25,6 +26,7 @@ namespace Dissonance.Integrations.LiteNetLibManager.Editor
             _clientDataChannelProperty = serializedObject.FindProperty("clientDataChannel");
             _serverDataChannelProperty = serializedObject.FindProperty("serverDataChannel");
             _managerProperty = serializedObject.FindProperty("manager");
+            _defaultManagerClassNameProperty = serializedObject.FindProperty("defaultManagerClassName");
         }
 
         public override void OnInspectorGUI()
@@ -42,6 +44,7 @@ namespace Dissonance.Integrations.LiteNetLibManager.Editor
                     EditorGUILayout.PropertyField(_clientDataChannelProperty);
                     EditorGUILayout.PropertyField(_serverDataChannelProperty);
                     EditorGUILayout.PropertyField(_managerProperty);
+                    EditorGUILayout.PropertyField(_defaultManagerClassNameProperty);
                 }
             }
 
