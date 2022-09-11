@@ -31,7 +31,7 @@ namespace Dissonance.Integrations.LiteNetLibManager
 
         private void Start()
         {
-            if (manager == null)
+            if (manager == null && !string.IsNullOrEmpty(defaultManagerClassName))
             {
                 System.Reflection.Assembly[] assemblies = System.AppDomain.CurrentDomain.GetAssemblies();
                 foreach (var assembly in assemblies)
