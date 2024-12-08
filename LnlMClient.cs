@@ -61,15 +61,15 @@ namespace Dissonance.Integrations.LiteNetLibManager
         {
             _network.manager.ClientSendPacket(_network.clientDataChannel, LiteNetLib.DeliveryMethod.ReliableOrdered, _network.voiceOpCode, (writer) =>
             {
-                writer.PutBytesWithLength(packet.Array);
+                writer.PutBytesWithLength(packet.Array, packet.Offset, (ushort)packet.Count);
             });
         }
 
         protected override void SendUnreliable(ArraySegment<byte> packet)
         {
-            _network.manager.ClientSendPacket(_network.clientDataChannel, LiteNetLib.DeliveryMethod.Sequenced, _network.voiceOpCode, (writer) =>
+            _network.manager.ClientSendPacket(_network.clientDataChannel, LiteNetLib.DeliveryMethod.Unreliable, _network.voiceOpCode, (writer) =>
             {
-                writer.PutBytesWithLength(packet.Array);
+                writer.PutBytesWithLength(packet.Array, packet.Offset, (ushort)packet.Count);
             });
         }
         #endregion
